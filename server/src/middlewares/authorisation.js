@@ -1,9 +1,8 @@
 const ErrorResponse = require("../utils/ErrorResponse");
 
-const authorize = (...roles) => {
-  console.log(roles);
+exports.authorize = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.roles)) {
+    if (!roles.includes(req.user.role)) {
       return next(
         new ErrorResponse(
           `User role ${req.user.role} is not authorized to access this route`,
@@ -14,5 +13,3 @@ const authorize = (...roles) => {
     next();
   };
 };
-
-module.exports = authorize;

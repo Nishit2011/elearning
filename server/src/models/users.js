@@ -50,9 +50,8 @@ const userSchema = mongoose.Schema(
         }
       },
     },
-    profilePicture: {
+    avatar: {
       type: Buffer,
-      //   required: [true, "Profile picture is required"],
     },
     city: {
       type: String,
@@ -90,6 +89,7 @@ userSchema.methods.toJSON = function () {
   const userObj = user.toObject();
   delete userObj.password;
   delete userObj.tokens;
+  delete userObj.avatar;
   return userObj;
 };
 
@@ -100,6 +100,7 @@ userSchema.pre("save", async function (next) {
   if (user.isModified("password")) {
     user.password = await bcryptjs.hash(user.password, 8);
   }
+
   next();
 });
 
