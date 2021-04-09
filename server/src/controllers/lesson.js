@@ -8,9 +8,9 @@ exports.addLesson = asyncHandler(async (req, res, next) => {
   if (!course) return "Course doesnot exist";
 
   if (course.author.toString() !== req.user._id.toString()) {
-    return res.send("You cannot add lesson");
+    return "You cannot add lesson";
   }
-  console.log("lesson added");
+
   const lesson = Lesson(req.body);
   lesson.courseId = courseId;
   await lesson.save();

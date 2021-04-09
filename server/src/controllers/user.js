@@ -2,6 +2,7 @@ const User = require("../models/users");
 const ErrorResponse = require("../utils/ErrorResponse");
 const asyncHandler = require("../middlewares/async");
 const sharp = require("sharp");
+const Course = require("../models/courses");
 
 exports.addUser = asyncHandler(async (req, res, next) => {
   const user = User(req.body);
@@ -58,8 +59,15 @@ exports.deleteAllUsers = asyncHandler(async (req, res, next) => {
   res.send({ users, count });
 });
 
-exports.deleteUserById = async (req, res, next) => {
+exports.deleteUserById = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
   const user = await User.findById(id);
-  console.log(user.email);
-};
+  await user.remove();
+  res.send({ success: true, message: "User has been successfully deleted" });
+});
+
+exports.getCoursesByAuthor = asyncHandler(async (req, res, next) => {
+  const authorId = req.params.id;
+  const courses = await Course.find({ author: authorId });
+  res.send({ success: true, count: courses.length, courses });
+});

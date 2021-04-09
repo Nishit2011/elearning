@@ -8,6 +8,7 @@ const {
   addProfilePic,
   removeProfilePic,
   getProfilePic,
+  getCoursesByAuthor,
 } = require("../controllers/user");
 const { authenticate } = require("../middlewares/authentication");
 const { authorize } = require("../middlewares/authorisation");
@@ -28,6 +29,7 @@ router
     addProfilePic
   )
   .delete("/user/profilepic/", authenticate, removeProfilePic)
-  .get("/user/:id/profilepic", getProfilePic);
+  .get("/user/:id/profilepic", getProfilePic)
+  .get("/user/:id/courses", authenticate, getCoursesByAuthor);
 
 module.exports = router;

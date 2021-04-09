@@ -20,10 +20,29 @@ exports.getCourseDetailsById = asyncHandler(async (req, res, next) => {
 });
 
 exports.getAllCourses = asyncHandler(async (req, res, next) => {
-  console.log("getAllCourses");
   const authorId = req.params.id;
-  console.log(authorId);
   const course = await Course.find({ author: authorId });
   await course.populate("author").execPopulate();
   console.log(course.author);
+});
+
+exports.deleteCourseById = asyncHandler(async (req, res, next) => {
+  const courseId = req.params.id;
+  const course = await Course.findById(courseId);
+
+  if (
+    req.user._id.toString() === course.author.toString() ||
+    req.user.role === "admin"
+  ) {
+    await course.remove();
+    res.send({
+      success: true,
+      message: `Course with id of ${courseId} has been successfully deleted`,
+    });
+    return true;
+  }
+  res.send({
+    success: true,
+    message: "Only admin and creator of course can delete the course",
+  });
 });
