@@ -7,19 +7,23 @@ const userSchema = mongoose.Schema(
   {
     firstName: {
       type: String,
+      trim: true,
       required: [true, "First Name is required"],
     },
     lastName: {
       type: String,
+      trim: true,
     },
     role: {
       type: String,
+      trim: true,
       enum: ["student", "instructor", "admin"],
       default: "student",
     },
     email: {
       type: String,
       unique: true,
+      trim: true,
       required: [true, "Email is required"],
       validate(value) {
         if (!validator.isEmail(value)) {
@@ -30,6 +34,7 @@ const userSchema = mongoose.Schema(
     password: {
       type: String,
       minlength: 6,
+      trim: true,
       required: [true, "Password is required"],
       validate(value) {
         if (value === "password") {
@@ -42,6 +47,7 @@ const userSchema = mongoose.Schema(
     },
     pincode: {
       type: Number,
+      trim: true,
       required: [true, "Pincode is required"],
       validate(value) {
         console.log(String(value).length);
@@ -75,6 +81,12 @@ const userSchema = mongoose.Schema(
     timestamps: true,
   }
 );
+
+userSchema.virtual("course", {
+  ref: "course",
+  localField: "_id",
+  foreignField: "author",
+});
 
 userSchema.methods.getAuthToken = async function () {
   const user = this;
