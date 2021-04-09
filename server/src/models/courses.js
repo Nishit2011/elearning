@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Lesson = require("./lessons");
 
 const courseSchema = mongoose.Schema(
   {
@@ -33,6 +34,13 @@ courseSchema.virtual("lesson", {
   localField: "_id",
   foreignField: "courseId",
 });
+
+courseSchema.pre("remove", async function (next) {
+  const course = this;
+  const lesson = await Lesson.deleteMany({ courseId: course._id });
+  next();
+});
+
 const Course = new mongoose.model("Course", courseSchema);
 
 module.exports = Course;

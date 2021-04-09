@@ -60,10 +60,20 @@ exports.deleteAllUsers = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteUserById = asyncHandler(async (req, res, next) => {
-  const id = req.params.id;
-  const user = await User.findById(id);
-  await user.remove();
-  res.send({ success: true, message: "User has been successfully deleted" });
+  if (
+    req.user.role === "admin" ||
+    req.user._id.toString() === req.params.id.toString()
+  ) {
+    const id = req.params.id;
+    const user = await User.findById(id);
+
+    if (!user) return "No such user exists";
+
+    await user.remove();
+    res.send({ success: true, message: "User has been successfully deleted" });
+  } else {
+    res.send("You are not authorised to delete");
+  }
 });
 
 exports.getCoursesByAuthor = asyncHandler(async (req, res, next) => {

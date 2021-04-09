@@ -20,7 +20,12 @@ router
   .post("/signup", addUser)
   .get("/allusers", authenticate, authorize("admin"), getAllUsers)
   .delete("/deleteusers", authenticate, authorize("admin"), deleteAllUsers)
-  .delete("/deleteuser/:id", deleteUserById)
+  .delete(
+    "/deleteuser/:id",
+    authenticate,
+    authorize("admin", "instructor"),
+    deleteUserById
+  )
   .post("/login", loginUser)
   .post(
     "/user/profilepic",

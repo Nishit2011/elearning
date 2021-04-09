@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const { default: validator } = require("validator");
+const Course = require("./courses");
 
 const userSchema = mongoose.Schema(
   {
@@ -115,7 +116,13 @@ userSchema.pre("save", async function (next) {
 
   next();
 });
+userSchema.pre("remove", async function (next) {
+  const user = this;
 
+  const course = await Course.deleteMany({ author: user._id });
+
+  next();
+});
 userSchema.statics.findUserByEmailPassword = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {

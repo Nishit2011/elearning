@@ -19,8 +19,9 @@ exports.addLesson = asyncHandler(async (req, res, next) => {
 
 exports.getLessonsByCourseId = asyncHandler(async (req, res, next) => {
   const courseId = req.params.id;
-  const lesson = await Lesson.find({ courseId });
   const course = await Course.findById(courseId);
+  const lesson = await Lesson.find({ courseId });
+
   await course.populate("author").execPopulate();
 
   res.send({
