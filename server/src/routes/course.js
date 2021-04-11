@@ -4,6 +4,7 @@ const {
   getAllCourses,
   getCourseDetailsById,
   deleteCourseById,
+  editCoursesById,
 } = require("../controllers/course");
 const { authenticate } = require("../middlewares/authentication");
 const { authorize } = require("../middlewares/authorisation");
@@ -19,6 +20,7 @@ router
     authenticate,
     authorize("instructor", "admin"),
     deleteCourseById
-  );
+  )
+  .patch("/:id/course", authenticate, editCoursesById);
 
 module.exports = router;

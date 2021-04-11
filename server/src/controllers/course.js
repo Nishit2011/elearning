@@ -1,3 +1,4 @@
+const e = require("express");
 const asyncHandler = require("../middlewares/async");
 const Course = require("../models/courses");
 const Lesson = require("../models/lessons");
@@ -13,17 +14,23 @@ exports.addCourse = asyncHandler(async (req, res, next) => {
 
 exports.getCourseDetailsById = asyncHandler(async (req, res, next) => {
   const courseId = req.params.id;
-  if (!courseId) res.send({ success: false, message: "Course doesnot exist" });
-  const course = await Course.findById(courseId);
-  await course.populate("author").execPopulate();
-  res.send(course);
+  if (!courseId) {
+    res.send({ success: false, message: "Course doesnot exist" });
+  } else {
+    const course = await Course.findById(courseId);
+    await course.populate("author").execPopulate();
+    res.send(course);
+  }
 });
 
 exports.getAllCourses = asyncHandler(async (req, res, next) => {
   const authorId = req.params.id;
   const course = await Course.find({ author: authorId });
-  await course.populate("author").execPopulate();
-  console.log(course.author);
+  if (!course) {
+    res.send({ success: true, message: "Course does not exist" });
+  } else {
+    await course.populate("author").execPopulate();
+  }
 });
 
 exports.deleteCourseById = asyncHandler(async (req, res, next) => {
@@ -45,4 +52,28 @@ exports.deleteCourseById = asyncHandler(async (req, res, next) => {
     success: true,
     message: "Only admin and creator of course can delete the course",
   });
+});
+
+exports.editCoursesById = asyncHandler(async (req, res, next) => {
+  const courseId = req.params.id;
+
+  const authorId = req.user._id;
+
+  const course = await Course.findOne({ _id: courseId, author: authorId });
+  if (!course) {
+    res.send({ success: false, message: "No course found!" });
+  } else {
+    const updates = Object.keys(req.body);
+    const allowedUpdateFields = ["title", "content"];
+    const isValidOperation = updates.every((update) =>
+      allowedUpdateFields.includes(update)
+    );
+    if (!isValidOperation) {
+      res.status(500).send({ error: "Invalid fields for update" });
+    } else {
+      updates.forEach((update) => (course[update] = req.body[update]));
+      await course.save();
+      res.send(course);
+    }
+  }
 });

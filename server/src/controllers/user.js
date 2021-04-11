@@ -47,6 +47,14 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
   res.send({ user, token });
 });
 
+exports.logout = asyncHandler(async (req, res, next) => {
+  req.user.tokens = req.user.tokens.filter((el) => {
+    return el.token !== req.token;
+  });
+  req.user.save();
+  res.send({ success: true, message: "Logged out successfully" });
+});
+
 exports.getAllUsers = asyncHandler(async (req, res, next) => {
   const users = await User.find();
 
