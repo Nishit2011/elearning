@@ -65,3 +65,23 @@ exports.editLessonById = asyncHandler(async (req, res) => {
     }
   }
 });
+
+exports.deleteLessonById = asyncHandler(async (req, res, next) => {
+  const authorId = req.user._id;
+  const courseId = req.params.courseid;
+  const lessonId = req.params.lessonid;
+
+  const course = await Course.findOne({ author: authorId, _id: courseId });
+  if (!course) {
+    res.send({ success: false, message: "Course is not available" });
+  } else {
+    const lesson = await Lesson.findOne({ courseId, _id: lessonId });
+    if (!lesson) {
+      res.send({ success: false, message: "Lesson is not available" });
+    } else {
+      //delete logic for lesson
+      await lesson.remove();
+      res.send({ success: true, message: "Lesson deleted successfully" });
+    }
+  }
+});
