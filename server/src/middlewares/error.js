@@ -2,7 +2,7 @@ const ErrorResponse = require("../utils/ErrorResponse");
 
 const errorHandler = (err, req, res, next) => {
   let error = { ...err };
-  console.log(error.message);
+  console.log(err.name);
   error.message = err.message;
 
   if (err.code === 11000) {
@@ -17,6 +17,12 @@ const errorHandler = (err, req, res, next) => {
   if (err.message === "invalid signature") {
     error = new ErrorResponse(
       "You cannot access. Please authenticate yourself."
+    );
+  }
+  if (err.name === "CastError") {
+    error = new ErrorResponse(
+      "Incorrect Id in request. Not recognised by system",
+      400
     );
   }
 
