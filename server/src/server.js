@@ -8,8 +8,10 @@ const courseRoutes = require("./routes/course");
 const lessonRoute = require("./routes/lesson");
 const connectDB = require("./db/mongoose");
 const errorHandler = require("./middlewares/error");
+const cors = require("cors");
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 connectDB();
 const PORT = process.env.PORT;

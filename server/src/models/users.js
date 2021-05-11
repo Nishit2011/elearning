@@ -126,7 +126,7 @@ userSchema.pre("remove", async function (next) {
 userSchema.statics.findUserByEmailPassword = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) {
-    throw new Error("No user found!");
+    throw new Error("Login Error");
   }
   const isMatch = await bcryptjs.compare(password, user.password);
   if (!isMatch) {
