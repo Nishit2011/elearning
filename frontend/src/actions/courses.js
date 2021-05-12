@@ -1,41 +1,96 @@
 import {
-  ADD_COURSES,
-  ADD_COURSES_FAILURE,
-  ADD_COURSES_SUCCESS,
+  ADD_COURSE,
+  ADD_COURSE_FAILURE,
+  ADD_COURSE_SUCCESS,
+  GET_ALL_COURSES,
+  GET_ALL_COURSES_SUCCESS,
+  GET_ALL_COURSES_FAILURE,
 } from "../types/types";
 import baseURL from "../api/api";
 
-export const addCourses =
-  (...data) =>
+export const addCourse =
+  (...args) =>
   async (dispatch, getState) => {
-    dispatch(addCoursesRequest());
-    console.log(getState());
+    dispatch(addCourseRequest());
+    const {
+      login: { data },
+    } = getState();
 
-    // await baseURL
-    //   .post("/course", data[0])
-    //   .then((response) => {
-    //     dispatch(addCoursesRequestSuccess(response.data));
-    //     localStorage.setItem("userInfo", JSON.stringify(response.data));
-    //   })
-    //   .catch((error) => dispatch(addCoursesRequestFailure(error)));
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.token}`,
+      },
+    };
+
+    await baseURL
+      .post("/course", args[0], config)
+      .then((response) => {
+        dispatch(addCourseRequestSuccess(response.data));
+      })
+      .catch((error) => dispatch(addCourseRequestFailure(error)));
   };
 
-const addCoursesRequest = () => {
+const addCourseRequest = () => {
   return {
-    type: ADD_COURSES,
+    type: ADD_COURSE,
   };
 };
 
-const addCoursesRequestSuccess = (...data) => {
+const addCourseRequestSuccess = (...args) => {
   return {
-    type: ADD_COURSES_SUCCESS,
-    payload: data[0],
+    type: ADD_COURSE_SUCCESS,
+    payload: args[0],
   };
 };
 
-const addCoursesRequestFailure = (error) => {
+const addCourseRequestFailure = (error) => {
   return {
-    type: ADD_COURSES_FAILURE,
+    type: ADD_COURSE_FAILURE,
+    payload:
+      error.response && error.response.data.error
+        ? error.response.data.error
+        : error.message,
+  };
+};
+
+export const getAllCourses = (userId) => async (dispatch, getState) => {
+  console.log(userId);
+  dispatch(getAllCoursesRequest());
+
+  const {
+    login: { data },
+  } = getState();
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${data.token}`,
+    },
+  };
+
+  await baseURL
+    .get(`/user/${userId}/courses`, config)
+    .then((response) => {
+      dispatch(getAllCoursesRequestSuccess(response.data));
+    })
+    .catch((error) => dispatch(getAllCoursesRequestFailure(error)));
+};
+
+const getAllCoursesRequest = () => {
+  return {
+    type: GET_ALL_COURSES,
+  };
+};
+const getAllCoursesRequestSuccess = (...args) => {
+  return {
+    type: GET_ALL_COURSES_SUCCESS,
+    payload: args[0],
+  };
+};
+const getAllCoursesRequestFailure = (error) => {
+  return {
+    type: GET_ALL_COURSES_FAILURE,
     payload:
       error.response && error.response.data.error
         ? error.response.data.error

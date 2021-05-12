@@ -84,7 +84,7 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.virtual("course", {
-  ref: "course",
+  ref: "Course",
   localField: "_id",
   foreignField: "author",
 });

@@ -26,11 +26,12 @@ exports.getCourseDetailsById = asyncHandler(async (req, res, next) => {
 exports.getAllCourses = asyncHandler(async (req, res, next) => {
   const authorId = req.params.id;
   const course = await Course.find({ author: authorId });
+
   if (!course) {
     res.send({ success: true, message: "Course does not exist" });
-  } else {
-    await course.populate("author").execPopulate();
   }
+  await course.populate("author").execPopulate();
+  res.send({ success: true, courses: course });
 });
 
 exports.deleteCourseById = asyncHandler(async (req, res, next) => {

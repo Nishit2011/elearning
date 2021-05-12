@@ -4,18 +4,20 @@ import { composeWithDevTools } from "redux-devtools-extension";
 import loginReducer from "./reducers/loginReducer";
 import signUpReducer from "./reducers/signUpReducer";
 import courseReducer from "./reducers/courseReducer";
+import lessonReducer from "./reducers/lessonReducer";
 
 const reducer = combineReducers({
   signup: signUpReducer,
   login: loginReducer,
   course: courseReducer,
+  lesson: lessonReducer,
 });
 
 const userInfoFromStorage = localStorage.getItem("userInfo")
   ? JSON.parse(localStorage.getItem("userInfo"))
   : null;
 const initialState = {
-  login: { userInfo: userInfoFromStorage },
+  login: { data: userInfoFromStorage },
 };
 
 const middlewares = [thunk];
