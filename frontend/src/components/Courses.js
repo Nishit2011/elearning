@@ -4,31 +4,33 @@ import { addCourse, getAllCourses } from "../actions/courses";
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-const Courses = () => {
+const Courses = (props) => {
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const { data } = useSelector((state) => state.login);
+  const { courses } = useSelector((state) => state.course);
+
   const [courseObj, setCourseObj] = useState({
     title: "",
     content: "",
     subscribe: false,
     author: {},
   });
+  const [flag, setFlag] = useState(false);
+
+  const [courseList, setCourseList] = useState([]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    let updatedCourseObj = { ...courseObj };
-    updatedCourseObj.author = data;
-
-    dispatch(addCourse(updatedCourseObj));
+    setCourseObj({ ...courseObj, author: data });
+    dispatch(addCourse(courseObj));
+    setFlag(true);
   };
 
-  // useEffect(() => {
-  //   if (data) {
-  //     history.push("/lesson");
-  //   }
-  // }, [data]);
-  const { data } = useSelector((state) => state.login);
-  const { courses } = useSelector((state) => state.course);
+  useEffect(() => {
+    console.log(courseList);
+  }, [courseList]);
 
   useEffect(() => {
     if (!data) {
@@ -37,6 +39,10 @@ const Courses = () => {
       dispatch(getAllCourses(data.user._id));
     }
   }, []);
+
+  useEffect(() => {
+    if (flag) dispatch(getAllCourses(data.user._id));
+  }, [flag]);
 
   return (
     <div>
