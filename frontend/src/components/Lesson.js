@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addLesson, getAllLessons } from "../actions/lesson";
+import { useHistory } from "react-router-dom";
 
 const Lesson = (props) => {
-  const [courseId, setCourseId] = useState(0);
+  const [courseName, setCourseName] = useState("");
   const [lessonObj, setLessonObj] = useState({
     name: "",
     content: "",
@@ -12,6 +13,8 @@ const Lesson = (props) => {
   const [flag, setFlag] = useState(false);
   const dispatch = useDispatch();
   const lessonResponse = useSelector((state) => state.lesson);
+  const { data } = useSelector((state) => state.login);
+  const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -20,17 +23,31 @@ const Lesson = (props) => {
   };
 
   useEffect(() => {
-    dispatch(getAllLessons(props.location.state.courseId));
-    setLessonObj({ ...lessonObj, courseId: props.location.state.courseId });
+    // console.log(props.location.state.courseName);
+    if (!data) {
+      history.push("/login");
+    } else {
+      if (!props.location.state) {
+        history.push("/courses");
+      } else {
+        console.log(props.location);
+        dispatch(getAllLessons(props.location.state.courseId));
+        setLessonObj({ ...lessonObj, courseId: props.location.state.courseId });
+        setCourseName(props.location.state.courseName);
+      }
+    }
   }, []);
 
   useEffect(() => {
-    dispatch(getAllLessons(props.location.state.courseId));
+    if (props.location.state) {
+      dispatch(getAllLessons(props.location.state.courseId));
+    }
   }, [flag]);
 
   return (
     <div>
-      <h2>Lessons for Course Id: {lessonObj.courseId}</h2>
+      <h2>Lessons for Course Id: {courseName}</h2>
+      <button onClick={() => history.push("/courses")}>Back</button>
       <form onSubmit={(e) => handleSubmit(e)}>
         <input
           type="text"

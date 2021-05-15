@@ -5,6 +5,9 @@ import {
   GET_ALL_COURSES,
   GET_ALL_COURSES_SUCCESS,
   GET_ALL_COURSES_FAILURE,
+  DELETE_COURSE_BY_ID,
+  DELETE_COURSE_BY_ID_SUCCESS,
+  DELETE_COURSE_BY_ID_FAILURE,
 } from "../types/types";
 import baseURL from "../api/api";
 
@@ -91,6 +94,50 @@ const getAllCoursesRequestSuccess = (...args) => {
 const getAllCoursesRequestFailure = (error) => {
   return {
     type: GET_ALL_COURSES_FAILURE,
+    payload:
+      error.response && error.response.data.error
+        ? error.response.data.error
+        : error.message,
+  };
+};
+
+export const deleteCourseById = (courseId) => async (dispatch, getState) => {
+  dispatch(deleteCourseByIdRequest());
+  const {
+    login: { data },
+  } = getState();
+
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${data.token}`,
+    },
+  };
+
+  await baseURL
+    .delete(`/${courseId}/course`, config)
+    .then((response) => {
+      dispatch(deleteCourseByIdSuccess(response.data));
+    })
+    .catch((error) => dispatch(deleteCourseByIdFailure(error)));
+};
+
+export const deleteCourseByIdRequest = () => {
+  return {
+    type: DELETE_COURSE_BY_ID,
+  };
+};
+export const deleteCourseByIdSuccess = (...args) => {
+  console.log(args);
+  return {
+    type: DELETE_COURSE_BY_ID_SUCCESS,
+    payload: args[0],
+  };
+};
+
+export const deleteCourseByIdFailure = (error) => {
+  return {
+    type: DELETE_COURSE_BY_ID_FAILURE,
     payload:
       error.response && error.response.data.error
         ? error.response.data.error

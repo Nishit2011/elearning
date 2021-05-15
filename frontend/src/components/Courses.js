@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { addCourse, getAllCourses } from "../actions/courses";
+import { addCourse, deleteCourseById, getAllCourses } from "../actions/courses";
 import { useHistory } from "react-router-dom";
 import { Link } from "react-router-dom";
 
@@ -10,6 +10,7 @@ const Courses = (props) => {
 
   const { data } = useSelector((state) => state.login);
   const { courses } = useSelector((state) => state.course);
+  const { deleteCourseMsg } = useSelector((state) => state.course);
 
   const [courseObj, setCourseObj] = useState({
     title: "",
@@ -19,8 +20,6 @@ const Courses = (props) => {
   });
   const [flag, setFlag] = useState(false);
 
-  const [courseList, setCourseList] = useState([]);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     setCourseObj({ ...courseObj, author: data });
@@ -28,9 +27,11 @@ const Courses = (props) => {
     setFlag(true);
   };
 
-  useEffect(() => {
-    console.log(courseList);
-  }, [courseList]);
+  const handleDeleteCourse = (e, courseId) => {
+    e.preventDefault();
+    console.log(courseId);
+    dispatch(deleteCourseById(courseId));
+  };
 
   useEffect(() => {
     if (!data) {
@@ -38,7 +39,7 @@ const Courses = (props) => {
     } else {
       dispatch(getAllCourses(data.user._id));
     }
-  }, []);
+  }, [deleteCourseMsg]);
 
   useEffect(() => {
     if (flag) dispatch(getAllCourses(data.user._id));
@@ -46,7 +47,7 @@ const Courses = (props) => {
 
   return (
     <div>
-      <h1> courses</h1>
+      <h1> Courses</h1>
       <form onSubmit={(e) => handleSubmit(e)}>
         <input
           type="text"
@@ -71,11 +72,15 @@ const Courses = (props) => {
           courses.courses.map((el) => (
             <li key={el._id}>
               {el.title}
+              <button onClick={(e) => handleDeleteCourse(e, el._id)}>
+                Delete
+              </button>
               <Link
                 to={{
                   pathname: "/lessons",
                   state: {
                     courseId: el._id,
+                    courseName: el.title,
                   },
                 }}
               >

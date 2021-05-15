@@ -5,12 +5,16 @@ import loginReducer from "./reducers/loginReducer";
 import signUpReducer from "./reducers/signUpReducer";
 import courseReducer from "./reducers/courseReducer";
 import lessonReducer from "./reducers/lessonReducer";
+import userReducer from "./reducers/userReducer";
+import deleteUserReducer from "./reducers/deleteUserReducer";
 
 const reducer = combineReducers({
   signup: signUpReducer,
   login: loginReducer,
   course: courseReducer,
   lesson: lessonReducer,
+  users: userReducer,
+  deleteUser: deleteUserReducer,
 });
 
 const userInfoFromStorage = localStorage.getItem("userInfo")
