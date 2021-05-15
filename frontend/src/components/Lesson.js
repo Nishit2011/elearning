@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addLesson, getAllLessons } from "../actions/lesson";
+import { addLesson, deleteLessonById, getAllLessons } from "../actions/lesson";
 import { useHistory } from "react-router-dom";
 
 const Lesson = (props) => {
@@ -14,12 +14,19 @@ const Lesson = (props) => {
   const dispatch = useDispatch();
   const lessonResponse = useSelector((state) => state.lesson);
   const { data } = useSelector((state) => state.login);
+  const { deleteLessonMsg } = useSelector((state) => state.lesson);
   const history = useHistory();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(addLesson(lessonObj));
     setFlag(true);
+  };
+
+  const handleLessonDelete = (e, courseId, lessonId) => {
+    console.log(courseId, lessonId);
+    e.preventDefault();
+    dispatch(deleteLessonById(courseId, lessonId));
   };
 
   useEffect(() => {
@@ -30,13 +37,12 @@ const Lesson = (props) => {
       if (!props.location.state) {
         history.push("/courses");
       } else {
-        console.log(props.location);
         dispatch(getAllLessons(props.location.state.courseId));
         setLessonObj({ ...lessonObj, courseId: props.location.state.courseId });
         setCourseName(props.location.state.courseName);
       }
     }
-  }, []);
+  }, [data, deleteLessonMsg]);
 
   useEffect(() => {
     if (props.location.state) {
@@ -70,6 +76,13 @@ const Lesson = (props) => {
             return (
               <li key={el._id}>
                 {el.name} -------- {el.content}
+                <button
+                  onClick={(e) =>
+                    handleLessonDelete(e, props.location.state.courseId, el._id)
+                  }
+                >
+                  DELETE
+                </button>
               </li>
             );
           })

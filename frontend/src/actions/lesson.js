@@ -5,6 +5,9 @@ import {
   GET_ALL_LESSONS,
   GET_ALL_LESSONS_SUCCESS,
   GET_ALL_LESSONS_FAILURE,
+  DELETE_LESSON_BY_ID,
+  DELETE_LESSON_BY_ID_SUCCESS,
+  DELETE_LESSON_BY_ID_FAILURE,
 } from "../types/types";
 import baseURL from "../api/api";
 
@@ -92,6 +95,51 @@ const getAllLessonsRequestSuccess = (...args) => {
 const getAllLessonsRequestFailure = (error) => {
   return {
     type: GET_ALL_LESSONS_FAILURE,
+    payload:
+      error.response && error.response.data.error
+        ? error.response.data.error
+        : error.message,
+  };
+};
+
+export const deleteLessonById =
+  (courseId, lessonId) => async (dispatch, getState) => {
+    dispatch(deleteLessonByIdRequest());
+    const {
+      login: { data },
+    } = getState();
+
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${data.token}`,
+      },
+    };
+
+    await baseURL
+      .delete(`/${courseId}/course/${lessonId}/lesson`, config)
+      .then((response) => {
+        dispatch(deleteLessonByIdSuccess(response.data));
+      })
+      .catch((error) => dispatch(deleteLessonByIdFailure(error)));
+  };
+
+export const deleteLessonByIdRequest = () => {
+  return {
+    type: DELETE_LESSON_BY_ID,
+  };
+};
+export const deleteLessonByIdSuccess = (...args) => {
+  console.log(args);
+  return {
+    type: DELETE_LESSON_BY_ID_SUCCESS,
+    payload: args[0],
+  };
+};
+
+export const deleteLessonByIdFailure = (error) => {
+  return {
+    type: DELETE_LESSON_BY_ID_FAILURE,
     payload:
       error.response && error.response.data.error
         ? error.response.data.error
