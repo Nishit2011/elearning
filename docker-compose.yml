@@ -1,0 +1,31 @@
+version: "3.8"
+services:
+  web-fe:
+    build: ./frontend
+    ports:
+      - target: 3000
+        published: 3000
+    networks:
+      - elearn-net
+    volumes:
+      - type: volume
+        source: elearn-vol
+        target: /app
+  server:
+    build: ./server
+    ports:
+      - target: 3001
+        published: 3001
+    networks:
+      elearn-net:
+  database:
+    image: "mongo:latest"
+    networks:
+      - elearn-net
+    ports:
+      - target: 27017
+        published: 27017
+networks:
+  elearn-net:
+volumes:
+  elearn-vol:
